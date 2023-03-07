@@ -59,7 +59,8 @@ def intro_text_handler(message):
     # Генерируем документ и отправляем его пользователю
     try:
         document = generate_document(intro_text)
-        bot.send_document(chat_id, document)
+        msg = bot.send_document(chat_id, document)
+        bot.register_next_step_handler(msg, send_intro_text_command_handler)
     except Exception as e:
         bot.send_message(chat_id, "Ошибка генерации документа: " + str(e))
 
