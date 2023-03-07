@@ -1,16 +1,15 @@
-import telebot
-from telebot import types
-from docx import Document
-from dotenv import load_dotenv
 import os
 import tempfile
+
+import telebot
+from docx import Document
+from dotenv import load_dotenv
+from telebot import types
 
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-
-bot = telebot.TeleBot(BOT_TOKEN)
+bot = telebot.TeleBot(os.getenv('BOT_TOKEN'))
 
 # Определяем список пользователей, которые ожидают текста
 users_waiting_for_intro_text = []
@@ -20,7 +19,7 @@ users_waiting_for_intro_text = []
 class States:
     WAITING_FOR_INTRO_TEXT = 1
 
-# Обработчик команды /start
+
 @bot.message_handler(commands=['start'])
 def start_command_handler(message):
     chat_id = message.chat.id
@@ -40,16 +39,18 @@ def start_command_handler(message):
     bot.register_next_step_handler(msg, send_intro_text_command_handler)
 
 
-# Обработчик команды /send_intro_text
 @bot.message_handler(commands=['send_intro_text'])
 def send_intro_text_command_handler(message):
     chat_id = message.chat.id
     bot.send_message(chat_id, "Введите текст:")
     users_waiting_for_intro_text.append(chat_id)
 
-# Обработчик текста
-@bot.message_handler(func=lambda message: message.chat.id in users_waiting_for_intro_text)
+
+@bot.message_handler(
+        func=lambda message: message.chat.id in users_waiting_for_intro_text
+        )
 def intro_text_handler(message):
+    """Обработчик текста"""
     chat_id = message.chat.id
     intro_text = message.text
 
@@ -65,8 +66,8 @@ def intro_text_handler(message):
         bot.send_message(chat_id, "Ошибка генерации документа: " + str(e))
 
 
-# Генератор документа
 def generate_document(intro_text):
+    """Генератор Word документа"""
     try:
         doc = Document()
         doc.add_paragraph(intro_text)
@@ -77,9 +78,10 @@ def generate_document(intro_text):
     except Exception as e:
         raise Exception("Ошибка генерации документа: " + str(e))
 
-# Обработчик неизвестных команд
+
 @bot.message_handler(func=lambda message: True)
 def unknown_command_handler(message):
+    """Обработчик неизвестных команд"""
     chat_id = message.chat.id
     bot.send_message(chat_id, "Я не понимаю, о чем вы.")
 
