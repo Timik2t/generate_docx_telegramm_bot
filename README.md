@@ -21,7 +21,7 @@
 1. Склонировать репозиторий на локальную машину:
 
     ```bash
-    git clone git@github.com:Timik2t/cat_charity_fund.git
+    git clone git@github.com:Timik2t/generate_docx_telegramm_bot.git
     ```
 
 2. Создать и активировать виртуальное окружение:
